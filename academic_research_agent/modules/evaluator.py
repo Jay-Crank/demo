@@ -536,7 +536,7 @@ def evaluate_multi_source(
     for key, display in source_display_names.items():
         s = source_stats.get(key, {})
         err = s.get("error")
-        status = "✅ 成功" if not err else f"⚠️ 失败: {err[:50]}"
+        status = "成功" if not err else f"失败: {err[:50]}"
         comparison[display] = [
             s.get("count", 0),
             f"{s['avg_year']}" if s.get("avg_year") else "N/A",

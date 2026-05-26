@@ -22,7 +22,7 @@ from collections import defaultdict
 import requests
 
 
-# ── Constants ────────────────────────────────────────────────────────────
+#  Constants 
 
 _DEFAULT_CACHE_DIR = Path(__file__).parent.parent / ".cache" / "pdfs"
 _ARXIV_PDF_URL = "https://arxiv.org/pdf/{arxiv_id}.pdf"
@@ -124,7 +124,7 @@ _EXPERIMENT_TABLE_KEYWORDS = [
 ]
 
 
-# ── PDF download ─────────────────────────────────────────────────────────
+#  PDF download 
 
 def _ensure_cache_dir(cache_dir: Path | None = None) -> Path:
     d = cache_dir or _DEFAULT_CACHE_DIR
@@ -218,7 +218,7 @@ def batch_download_pdfs(
     return results
 
 
-# ── PDF text extraction ──────────────────────────────────────────────────
+#  PDF text extraction 
 
 def extract_full_text(pdf_path: Path | str) -> tuple[str, str | None]:
     """Extract full text from a PDF using pymupdf.
@@ -315,7 +315,7 @@ def _fallback_extract(pdf_path: Path | str) -> str:
     return ""
 
 
-# ── Section parsing ──────────────────────────────────────────────────────
+#  Section parsing 
 
 def parse_paper_sections(full_text: str) -> dict:
     """Parse academic paper into named sections.
@@ -381,7 +381,7 @@ def _extract_limitations(full_text: str) -> str:
     return "\n".join(lim_sents[:10])
 
 
-# ── Experiment data extraction ───────────────────────────────────────────
+#  Experiment data extraction 
 
 def _extract_experiment_highlights(sections: dict) -> str:
     """Extract key experimental findings from the experiments/discussion sections."""
@@ -426,7 +426,7 @@ def _extract_method_summary(sections: dict) -> str:
     return " ".join(method_sents[:5]) if method_sents else method_text[:500]
 
 
-# ── Deep reading card ────────────────────────────────────────────────────
+#  Deep reading card 
 
 def build_deep_reading_card(
     paper: dict,
@@ -585,7 +585,7 @@ def _classify_paper_type(paper: dict) -> str:
     return "其他"
 
 
-# ── Reading path builder ─────────────────────────────────────────────────
+#  Reading path builder 
 
 def build_reading_path(
     papers: list[dict],
@@ -610,7 +610,7 @@ def build_reading_path(
     cards = list(deep_cards)
     paths: list[dict] = []
 
-    # ── Path 1: Quick overview (survey first, then latest SOTA) ──
+    #  Path 1: Quick overview (survey first, then latest SOTA) 
     overview_papers = []
     for i, c in enumerate(cards):
         if c.get("paper_type") == "综述":
@@ -632,7 +632,7 @@ def build_reading_path(
         ),
     })
 
-    # ── Path 2: Method lineage (same method family, chronological) ──
+    #  Path 2: Method lineage (same method family, chronological) 
     method_groups = _group_by_method_family(papers, cards)
     if method_groups:
         best_group = max(method_groups.values(), key=len)
@@ -644,7 +644,7 @@ def build_reading_path(
                 "rationale": "按时间顺序阅读同一方法族的论文，追踪技术演进脉络。",
             })
 
-    # ── Path 3: Application-oriented ──
+    #  Path 3: Application-oriented 
     app_indices = [
         i for i, c in enumerate(cards)
         if c.get("paper_type") in ("应用系统", "评测基准")
@@ -698,7 +698,7 @@ def _build_simple_deps(papers: list[dict], cards: list[dict]) -> dict:
     return deps
 
 
-# ── Full-text evidence pack ──────────────────────────────────────────────
+#  Full-text evidence pack 
 
 def build_fulltext_evidence_pack(
     papers: list[dict],
@@ -742,7 +742,7 @@ def build_fulltext_evidence_pack(
     return base_pack
 
 
-# ── Formatting for UI ────────────────────────────────────────────────────
+#  Formatting for UI 
 
 def format_deep_card_markdown(card: dict) -> str:
     """Render a deep reading card as Markdown for Streamlit."""
@@ -751,8 +751,8 @@ def format_deep_card_markdown(card: dict) -> str:
     has_ft = card.get("has_full_text", False)
     pdf_ok = card.get("pdf_available", False)
 
-    ft_badge = "📄 全文" if has_ft else "📎 摘要"
-    pdf_badge = "✅ PDF" if pdf_ok else ""
+    ft_badge = "[全文]" if has_ft else "[摘要]"
+    pdf_badge = "[PDF]" if pdf_ok else ""
 
     lines = [
         f"## {ft_badge} {title}",
@@ -768,11 +768,11 @@ def format_deep_card_markdown(card: dict) -> str:
 
     lines.extend([
         "",
-        "### 🎯 核心贡献",
+        "### 核心贡献",
         "",
         card.get("core_contribution", "（未提取）"),
         "",
-        "### 🔧 方法概述",
+        "### 方法概述",
         "",
         card.get("method_overview", "（未提取）")[:800],
     ])
@@ -781,7 +781,7 @@ def format_deep_card_markdown(card: dict) -> str:
     if results:
         lines.extend([
             "",
-            "### 📊 关键实验发现",
+            "### 关键实验发现",
             "",
             results[:1000],
         ])
@@ -790,18 +790,18 @@ def format_deep_card_markdown(card: dict) -> str:
     if limitations and limitations != "（论文中未明确提及）":
         lines.extend([
             "",
-            "### ⚠️ 局限性",
+            "### 局限性",
             "",
             limitations[:600],
         ])
 
     lines.extend([
         "",
-        "### 💡 新颖性评估",
+        "### 新颖性评估",
         "",
         card.get("novelty_assessment", "未评估"),
         "",
-        "### 📖 适合读者",
+        "### 适合读者",
         "",
         card.get("target_audience", "该领域研究者"),
     ])
@@ -815,7 +815,7 @@ def format_reading_path_markdown(reading_path: dict) -> str:
     if not paths:
         return "（未生成阅读路径）"
 
-    lines = ["## 📖 推荐阅读路径", ""]
+    lines = ["## 推荐阅读路径", ""]
 
     for i, path in enumerate(paths, 1):
         lines.append(f"### 路径 {i}：{path['label']}")
@@ -825,12 +825,12 @@ def format_reading_path_markdown(reading_path: dict) -> str:
         lines.append("**阅读顺序**：")
         papers = path.get("papers", [])
         for j, p in enumerate(papers, 1):
-            arrow = "└──" if j == len(papers) else "├──"
+            arrow = "+--" if j == len(papers) else "|--"
             title = p.get("title", "Untitled")[:80]
             year = p.get("year", "")
             authors = str(p.get("authors", ""))[:40]
             lines.append(f"  {arrow} **{j}. [{title}]({p.get('url', '#')})**")
-            lines.append(f"  │   {authors} ({year})")
+            lines.append(f"     {authors} ({year})")
         lines.append("")
 
     return "\n".join(lines)

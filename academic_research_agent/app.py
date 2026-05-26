@@ -53,16 +53,16 @@ from modules.deep_reader import (
 
 st.set_page_config(
     page_title="学术调研 Agent",
-    page_icon="📚",
+    page_icon=" ",
     layout="wide",
 )
 
-# ── Sidebar ──────────────────────────────────────────────────────────
-st.sidebar.title("📚 学术调研 Agent")
+#  Sidebar 
+st.sidebar.title("学术调研 Agent")
 st.sidebar.markdown("基于多轮检索与个性化排序")
 page = st.sidebar.radio(
     "选择功能",
-    ["🔍 深度搜索", "📊 深度调研", "📬 个性化推送", "🧪 实验评估"],
+    ["深度搜索", "深度调研", "个性化推送", "实验评估"],
 )
 
 st.sidebar.markdown("---")
@@ -70,7 +70,7 @@ st.sidebar.caption("数据来源：arXiv API | 算法：TF-IDF + 综合排序")
 st.sidebar.caption("MVP v2.0 — 支持 AI 增强报告（证据锚定）")
 
 
-# ── Weight settings widget (shared) ───────────────────────────────────
+#  Weight settings widget (shared) 
 def show_weight_settings(defaults: dict | None = None, show_preferences: bool = False) -> dict:
     """Render collapsible weight settings (5 components).
 
@@ -79,7 +79,7 @@ def show_weight_settings(defaults: dict | None = None, show_preferences: bool = 
     if defaults is None:
         defaults = get_default_weights()
 
-    with st.expander("⚙️ 排序权重设置", expanded=False):
+    with st.expander("排序权重设置", expanded=False):
         st.caption(
             "Score = w_r·R + w_t·T + w_c·C + w_s·S + w_q·Q  "
             "— 系统会自动归一化使总和为 1。"
@@ -125,16 +125,16 @@ def show_weight_settings(defaults: dict | None = None, show_preferences: bool = 
         selected_preferences = []
         if show_preferences:
             st.markdown("---")
-            st.caption("🎯 **主题偏好**（选中后自动调整权重偏向）")
+            st.caption(" **主题偏好**（选中后自动调整权重偏向）")
             cols = st.columns(3)
             with cols[0]:
-                if st.checkbox("📋 关注综述论文", value=False, key="pref_survey"):
+                if st.checkbox("关注综述论文", value=False, key="pref_survey"):
                     selected_preferences.append("关注综述论文")
             with cols[1]:
-                if st.checkbox("🔧 关注方法创新", value=False, key="pref_method"):
+                if st.checkbox("关注方法创新", value=False, key="pref_method"):
                     selected_preferences.append("关注方法创新")
             with cols[2]:
-                if st.checkbox("🏭 关注应用系统", value=False, key="pref_app"):
+                if st.checkbox("关注应用系统", value=False, key="pref_app"):
                     selected_preferences.append("关注应用系统")
 
         return {
@@ -149,7 +149,7 @@ def show_weight_settings(defaults: dict | None = None, show_preferences: bool = 
 
 def show_source_selector(default_all: bool = True) -> list[str]:
     """Render source selection checkboxes, return list of selected source names."""
-    st.caption("📡 **数据源选择**")
+    st.caption(" **数据源选择**")
     cols = st.columns(3)
     selected: list[str] = []
     with cols[0]:
@@ -176,7 +176,7 @@ def _init_sources(source_names: list[str]) -> list:
     return sources
 
 
-# ── Helpers ──────────────────────────────────────────────────────────
+#  Helpers 
 
 def _format_pub_date(pub) -> str:
     """Safely format a publication date to YYYY-MM-DD."""
@@ -231,7 +231,7 @@ def run_search_pipeline(
         st.write(f"各源检索共获得 {len(all_raw)} 篇论文（未去重）")
         if source_errors:
             for err in source_errors[:3]:
-                st.warning(f"⚠️ {err}")
+                st.warning(f" {err}")
 
         st.write("去重处理 (DOI / arXiv ID / 标题相似度)...")
         deduped = deduplicate(all_raw, threshold=0.92)
@@ -285,7 +285,7 @@ def show_papers_table(papers: list[dict], n: int = 10, show_extra: bool = False)
             row["DOI"] = p.get("doi", "") or "N/A"
             row["期刊/会议"] = p.get("venue", "") or "N/A"
             row["引用数"] = str(p.get("citation_count", 0))
-            row["开放获取"] = "✅" if p.get("is_open_access") else "—"
+            row["开放获取"] = "" if p.get("is_open_access") else "—"
         row["链接"] = f"[arXiv]({p['link']})"
         rows.append(row)
     st.dataframe(rows, use_container_width=True, hide_index=True)
@@ -295,7 +295,7 @@ def show_audit_view(
     paper_id_map: dict,
     validation: dict,
     report_text: str = "",
-    heading: str = "🔍 引用审计视图",
+    heading: str = "引用审计视图",
 ) -> None:
     """Display full citation audit view for an evidence-anchored report.
 
@@ -314,18 +314,18 @@ def show_audit_view(
     uncited = validation.get("uncited_claims", [])
     suggestions = validation.get("suggestions", [])
 
-    # ── Section heading ──
+    #  Section heading 
     st.markdown(f"## {heading}")
 
-    # ── Risk level badge ──
+    #  Risk level badge 
     if risk == "高风险":
-        st.error(f"### 🔴 风险等级：{risk}")
+        st.error(f"###  风险等级：{risk}")
     elif risk == "中风险":
-        st.warning(f"### 🟡 风险等级：{risk}")
+        st.warning(f"###  风险等级：{risk}")
     else:
-        st.success(f"### 🟢 风险等级：{risk}")
+        st.success(f"###  风险等级：{risk}")
 
-    # ── Summary metrics ──
+    #  Summary metrics 
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         st.metric("引用标记总数", stats.get("total_citation_marks", 0))
@@ -340,29 +340,29 @@ def show_audit_view(
         st.metric("无据陈述", stats.get("uncited_claim_count", 0),
                   delta=f"-{stats.get('uncited_claim_count', 0)}" if stats.get("uncited_claim_count", 0) > 0 else None)
 
-    # ── Invalid refs (red) ──
+    #  Invalid refs (red) 
     if invalid:
         st.markdown("---")
-        st.error(f"### ❌ 无效引用（{len(invalid)} 个）")
+        st.error(f"###  无效引用（{len(invalid)} 个）")
         st.markdown(
             "以下论文编号在报告中被引用，但**不存在于证据库中**，属于严重幻觉："
         )
         for ref in invalid:
-            st.markdown(f"- 🔴 **`[{ref}]`** — 证据库中不存在此编号")
+            st.markdown(f"-  **`[{ref}]`** — 证据库中不存在此编号")
     else:
         st.markdown("---")
-        st.success("### ✅ 无无效引用")
+        st.success("###  无无效引用")
 
-    # ── Uncited claims (yellow) ──
+    #  Uncited claims (yellow) 
     if uncited:
         st.markdown("---")
-        st.warning(f"### ⚠️ 无引用陈述（{len(uncited)} 条）")
+        st.warning(f"###  无引用陈述（{len(uncited)} 条）")
         st.markdown("以下句子包含事实性信号（数字/比较/指标），但**未引用任何论文编号**：")
         for i, uc in enumerate(uncited, 1):
             sent = uc.get("sentence", "")
             line_num = uc.get("line", "?")
             reason = uc.get("reason", "疑似事实性陈述")
-            with st.expander(f"⚠️ #{i} 行 {line_num}: {sent[:80]}...", expanded=False):
+            with st.expander(f" #{i} 行 {line_num}: {sent[:80]}...", expanded=False):
                 st.markdown(f"**完整句子：** {sent}")
                 st.markdown(f"**标记原因：** {reason}")
                 st.caption(f"所在行：{line_num}")
@@ -379,25 +379,25 @@ def show_audit_view(
                             st.code(f"{prefix} L{ctx_ln + 1}: {lines[ctx_ln][:200]}", language=None)
     else:
         st.markdown("---")
-        st.success("### ✅ 无未引用的事实性陈述")
+        st.success("###  无未引用的事实性陈述")
 
-    # ── Suggestions ──
+    #  Suggestions 
     if suggestions:
         st.markdown("---")
-        st.info("### 💡 建议")
+        st.info("###  建议")
         for s in suggestions:
             st.markdown(f"- {s}")
 
-    # ── Paper ID mapping table ──
+    #  Paper ID mapping table 
     st.markdown("---")
-    st.subheader("📋 论文编号映射表")
+    st.subheader("论文编号映射表")
     st.caption("报告中的每个 [P#] 编号对应以下论文：")
 
     if paper_id_map:
         for pid, meta in paper_id_map.items():
             is_cited = pid in cited
             is_invalid = pid in invalid
-            status_icon = "✅" if is_cited else ("❌" if is_invalid else "⬜")
+            status_icon = "" if is_cited else ("" if is_invalid else "⬜")
 
             with st.expander(
                 f"{status_icon} **{pid}** — {meta.get('title', '未知')[:70]}"
@@ -419,18 +419,18 @@ def show_audit_view(
                         st.caption(f"**链接**：[{url[:50]}...]({url})" if len(url) > 50 else f"**链接**：[{url}]({url})")
 
                 if is_invalid:
-                    st.error("⚠️ 此编号在报告中作为引用出现，但不存在于证据库中！")
+                    st.error(" 此编号在报告中作为引用出现，但不存在于证据库中！")
                 elif is_cited:
-                    st.success("✅ 此论文在报告中被正确引用。")
+                    st.success(" 此论文在报告中被正确引用。")
                 else:
                     st.info("⬜ 此论文存在于证据库中，但在报告中未被引用。")
     else:
         st.info("（无可用的论文编号映射数据）")
 
-    # ── Citation usage summary ──
+    #  Citation usage summary 
     if cited:
         st.markdown("---")
-        st.subheader("📊 引用使用概览")
+        st.subheader("引用使用概览")
         cited_set = set(cited)
         available_set = set(paper_id_map.keys())
         unused = available_set - cited_set
@@ -441,7 +441,7 @@ def show_audit_view(
         )
 
 
-# ── Per-section audit view for data-driven reports ──
+#  Per-section audit view for data-driven reports 
 
 def show_section_audit_rows(section_results: list[dict]) -> None:
     """Display per-section audit expanders for a data-driven report."""
@@ -449,7 +449,7 @@ def show_section_audit_rows(section_results: list[dict]) -> None:
         return
 
     st.markdown("---")
-    st.subheader("📊 逐节引用审计详情")
+    st.subheader("逐节引用审计详情")
 
     for sr in section_results:
         title = sr.get("section_title", "?")
@@ -457,7 +457,7 @@ def show_section_audit_rows(section_results: list[dict]) -> None:
         v = sr.get("validation", {})
         risk = v.get("risk_level", "?")
         stats = v.get("stats", {})
-        emoji = {"高风险": "🔴", "中风险": "🟡", "低风险": "🟢"}.get(risk, "⚪")
+        emoji = {"高风险": "", "中风险": "", "低风险": ""}.get(risk, "")
 
         invalid_count = stats.get("invalid_ref_count", 0)
         uncited_count = stats.get("uncited_claim_count", 0)
@@ -497,7 +497,7 @@ def show_section_audit_rows(section_results: list[dict]) -> None:
                         f"- 行 {uc.get('line', '?')}: "
                         f"{uc.get('sentence', '')[:120]}..."
                     )
-                    st.caption(f"  原因：{uc.get('reason', '?')}")
+                    st.caption(f"原因：{uc.get('reason', '?')}")
 
             # Show section text in collapsed sub-expander
             with st.expander("查看本节原文", expanded=False):
@@ -511,10 +511,10 @@ def show_credibility_panel(verification: dict) -> None:
     if not sections:
         return
 
-    # ── Overall badge row ──
+    #  Overall badge row 
     level = overall.get("level", "低")
     score = overall.get("score", 0)
-    emoji = {"高": "🟢", "中": "🟡", "低": "🔴"}.get(level, "⚪")
+    emoji = {"高": "", "中": "", "低": ""}.get(level, "")
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -531,8 +531,8 @@ def show_credibility_panel(verification: dict) -> None:
 
     st.markdown("---")
 
-    # ── Per-section expanders ──
-    st.subheader("📋 逐段引用溯源")
+    #  Per-section expanders 
+    st.subheader("逐段引用溯源")
 
     for sec in sections:
         name = sec["name"]
@@ -546,7 +546,7 @@ def show_credibility_panel(verification: dict) -> None:
             f"{badge} **{name}** — 证据论文 {paper_count} 篇，平均相关度 {avg_rel:.1%}"
         ):
             if not evidence:
-                st.caption("⚠️ 未找到相关证据论文，该段可信度较低。")
+                st.caption(" 未找到相关证据论文，该段可信度较低。")
             else:
                 for ep in evidence:
                     link = ep.get("link", "#")
@@ -557,11 +557,11 @@ def show_credibility_panel(verification: dict) -> None:
                     )
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# 
 # PAGE 1: 深度搜索
-# ═══════════════════════════════════════════════════════════════════════
-if page == "🔍 深度搜索":
-    st.title("🔍 深度搜索")
+# 
+if page == "深度搜索":
+    st.title("深度搜索")
     st.markdown("输入学术问题，系统自动扩展关键词、检索论文并生成综合回答。")
 
     # Initialize session state for this page
@@ -597,7 +597,7 @@ if page == "🔍 深度搜索":
     selected_sources = show_source_selector(default_all=True)
     sources = _init_sources(selected_sources)
 
-    # ── Search button ──
+    #  Search button 
     if st.button("开始深度搜索", type="primary", disabled=not query.strip() or not selected_sources):
         st.session_state.ds_query = query.strip()
         st.session_state.ds_top_n = top_n
@@ -616,7 +616,7 @@ if page == "🔍 深度搜索":
         st.session_state.ds_keywords = keywords
         st.session_state.ds_ranked = ranked
 
-    # ── Display results if available ──
+    #  Display results if available 
     ranked = st.session_state.ds_ranked
     keywords = st.session_state.ds_keywords
     saved_weights = st.session_state.ds_weights
@@ -625,14 +625,14 @@ if page == "🔍 深度搜索":
 
     if keywords or ranked:
         st.markdown("---")
-        st.subheader("🔑 查询扩展结果")
+        st.subheader("查询扩展结果")
         st.markdown("、".join([f"`{kw}`" for kw in keywords]))
 
         if not ranked:
-            st.warning("⚠️ 未检索到相关论文。请检查网络连接，或尝试更换查询关键词。")
+            st.warning("未检索到相关论文。请检查网络连接，或尝试更换查询关键词。")
         else:
             st.markdown("---")
-            st.subheader(f"📄 Top {saved_top_n} 相关论文")
+            st.subheader(f" Top {saved_top_n} 相关论文")
 
             if saved_weights:
                 w = saved_weights
@@ -663,12 +663,12 @@ if page == "🔍 深度搜索":
                     st.write(p.get("summary", "No abstract available."))
                     st.markdown(f"[查看论文]({p.get('link', '#')})")
 
-            # ── Paper reading cards ──
+            #  Paper reading cards 
             st.markdown("---")
-            st.subheader("📋 论文精读卡片")
+            st.subheader("论文精读卡片")
 
             n_cards = min(saved_top_n, len(ranked))
-            if st.button(f"📝 为 Top {n_cards} 篇论文生成精读卡片", type="secondary", key="btn_gen_cards"):
+            if st.button(f" 为 Top {n_cards} 篇论文生成精读卡片", type="secondary", key="btn_gen_cards"):
                 with st.spinner(f"正在为 {n_cards} 篇论文生成结构化精读卡片..."):
                     cards = []
                     for p in ranked[:n_cards]:
@@ -679,10 +679,10 @@ if page == "🔍 深度搜索":
             # Display cached cards
             if st.session_state.ds_cards:
                 for i, card in enumerate(st.session_state.ds_cards, 1):
-                    with st.expander(f"📄 Top {i}: {card['title'][:80]}..."):
+                    with st.expander(f" Top {i}: {card['title'][:80]}..."):
                         st.markdown(format_card_markdown(card))
 
-            # ── Report + credibility ──
+            #  Report + credibility 
             if "ds_report" not in st.session_state or not st.session_state.get("ds_report"):
                 # Generate once, cache
                 result = generate_search_answer(saved_query, keywords, ranked, saved_top_n)
@@ -700,15 +700,15 @@ if page == "🔍 深度搜索":
             st.markdown("---")
             show_credibility_panel(st.session_state.get("ds_verification", {}))
             st.markdown("---")
-            st.subheader("📝 综合回答")
+            st.subheader("综合回答")
             st.markdown(st.session_state.get("ds_report", ""))
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# 
 # PAGE 2: 深度调研
-# ═══════════════════════════════════════════════════════════════════════
-elif page == "📊 深度调研":
-    st.title("📊 深度调研")
+# 
+elif page == "深度调研":
+    st.title("深度调研")
     st.markdown("输入研究领域，系统自动拆分子方向并生成结构化调研报告。")
 
     area = st.text_input(
@@ -729,9 +729,9 @@ elif page == "📊 深度调研":
     selected_sources = show_source_selector(default_all=True)
     sources = _init_sources(selected_sources)
 
-    # ── AI enhanced report toggle ──
+    #  AI enhanced report toggle 
     st.markdown("---")
-    st.subheader("🤖 AI 增强报告")
+    st.subheader("AI 增强报告")
 
     report_mode = st.radio(
         "报告生成模式",
@@ -760,21 +760,21 @@ elif page == "📊 深度调研":
                 placeholder="sk-... (支持 DeepSeek / OpenAI / Ollama 等兼容 API)",
                 help="不会存储，仅本次会话使用。也可设置环境变量 LLM_API_KEY 或 OPENAI_API_KEY。",
             )
-        with st.expander("⚙️ LLM 高级设置", expanded=False):
+        with st.expander("LLM 高级设置", expanded=False):
             llm_model = st.text_input("模型名称", value="deepseek-chat", placeholder="deepseek-chat")
             llm_base_url = st.text_input("API Base URL", value="https://api.deepseek.com")
 
-    # ── Audit view toggle ──
+    #  Audit view toggle 
     col_toggle1, col_toggle2 = st.columns(2)
     with col_toggle1:
         show_audit = st.toggle(
-            "🔍 开启审计视图",
+            "开启审计视图",
             value=False,
             help="展示每篇论文编号的详细信息、引用使用情况、无效引用和无据陈述。",
         )
     with col_toggle2:
         deep_read = st.toggle(
-            "📖 精读模式（全文分析）",
+            "精读模式（全文分析）",
             value=False,
             help="下载 Top N 论文的 arXiv PDF 全文，提取方法、实验等章节，生成精读卡片和阅读路径。需联网下载。",
         )
@@ -783,19 +783,19 @@ elif page == "📊 深度调研":
         sub_dirs = generate_sub_directions(area.strip(), n=n_directions)
 
         st.markdown("---")
-        st.subheader("📌 子方向拆分")
+        st.subheader("子方向拆分")
         for i, sd in enumerate(sub_dirs, 1):
             st.markdown(f"{i}. {sd}")
 
         st.markdown("---")
-        st.subheader("📖 各子方向检索与排序")
+        st.subheader("各子方向检索与排序")
 
         all_dir_papers = {}
         all_ranked = []
 
         progress = st.progress(0)
         for idx, sd in enumerate(sub_dirs):
-            st.markdown(f"### 🔹 {sd}")
+            st.markdown(f"###  {sd}")
             _, ranked = run_search_pipeline(
                 sd,
                 papers_per_dir,
@@ -811,13 +811,13 @@ elif page == "📊 深度调研":
         from modules.deduplicator import deduplicate as dedup_fn
 
         st.markdown("---")
-        st.subheader("📋 汇总结果（跨方向去重）")
+        st.subheader("汇总结果（跨方向去重）")
         all_deduped = dedup_fn(all_ranked)
         st.write(f"总计 {len(all_ranked)} 篇（去重后 {len(all_deduped)} 篇）")
 
-        # ── Topic clustering ──
+        #  Topic clustering 
         st.markdown("---")
-        st.subheader("🧩 研究方向聚类分析")
+        st.subheader("研究方向聚类分析")
 
         if len(all_deduped) >= 6:
             with st.spinner("正在进行 TF-IDF + KMeans 主题聚类..."):
@@ -858,7 +858,7 @@ elif page == "📊 深度调研":
             st.info(f"论文数量不足（当前 {len(all_deduped)} 篇，需 >= 6），跳过聚类分析。")
             clustering_result = None
 
-        # ── Research gap analysis (shared across all report modes) ──
+        #  Research gap analysis (shared across all report modes) 
         with st.spinner("正在进行研究空白分析与选题建议..."):
             gap_result = analyze_research_gaps(
                 research_area=area.strip(),
@@ -868,9 +868,9 @@ elif page == "📊 深度调研":
                 all_papers=all_dir_papers,
             )
 
-        # ═══════════════════════════════════════════════════════════════
+        # 
         # Deep reading mode (full-text PDF analysis)
-        # ═══════════════════════════════════════════════════════════════
+        # 
         deep_cards: list[dict] = []
         deep_sections: list[dict | None] = []
         deep_paper_id_map: dict[str, dict] = {}
@@ -878,7 +878,7 @@ elif page == "📊 深度调研":
 
         if deep_read and all_deduped:
             st.markdown("---")
-            st.subheader("📖 精读模式 — 全文深度分析")
+            st.subheader("精读模式 — 全文深度分析")
 
             top_n_deep = min(10, len(all_deduped))
             top_papers = sorted(
@@ -886,7 +886,7 @@ elif page == "📊 深度调研":
             )[:top_n_deep]
 
             # --- Download PDFs ---
-            st.markdown("**📥 下载论文 PDF...**")
+            st.markdown("** 下载论文 PDF...**")
             download_status = st.empty()
 
             pdf_map: dict[str, Path | None] = {}  # keyed by arxiv_id
@@ -905,11 +905,11 @@ elif page == "📊 深度调研":
             success_count = sum(1 for v in paper_pdf_map.values() if v is not None)
             arxiv_avail = sum(1 for p in top_papers if extract_arxiv_id(p))
             download_status.text(
-                f"✅ 下载完成：{success_count} 篇成功 / {arxiv_avail} 篇有 arXiv ID / {top_n_deep} 篇候选"
+                f" 下载完成：{success_count} 篇成功 / {arxiv_avail} 篇有 arXiv ID / {top_n_deep} 篇候选"
             )
 
             # --- Extract text + parse sections + build cards ---
-            st.markdown("**🔍 解析全文并构建精读卡片...**")
+            st.markdown("** 解析全文并构建精读卡片...**")
 
             deep_papers: list[dict] = []
             extract_summary_lines: list[str] = []
@@ -925,15 +925,15 @@ elif page == "📊 深度调研":
                     if full_text and len(full_text) >= 100:
                         sections = parse_paper_sections(full_text)
                         card = build_deep_reading_card(p, sections, pdf_path)
-                        extract_status = f"✅ 全文 ({len(full_text)} 字符)"
+                        extract_status = f" 全文 ({len(full_text)} 字符)"
                     else:
                         card = build_deep_reading_card(p, None, pdf_path)
-                        extract_status = f"⚠️ 提取失败: {ft_error or '文本过短'}"
+                        extract_status = f" 提取失败: {ft_error or '文本过短'}"
                 else:
                     aid = extract_arxiv_id(p)
                     if aid:
                         card = build_deep_reading_card(p, None, None)
-                        extract_status = "❌ PDF 下载失败"
+                        extract_status = " PDF 下载失败"
                     else:
                         card = build_deep_reading_card(p, None, None)
                         extract_status = "⬜ 非 arXiv 论文"
@@ -971,27 +971,26 @@ elif page == "📊 深度调研":
 
             # --- Show deep reading cards ---
             st.markdown("---")
-            st.subheader("📇 精读卡片")
+            st.subheader("精读卡片")
 
             for i, card in enumerate(deep_cards):
                 paper_type = card.get("paper_type", "")
                 has_ft = card.get("has_full_text", False)
-                type_badge = {"综述": "📚", "方法创新": "🔧", "评测基准": "📊", "应用系统": "🚀"}.get(paper_type, "📄")
-                ft_badge = "📄 全文" if has_ft else "📎 摘要"
+                ft_badge = "[全文]" if has_ft else "[摘要]"
 
                 with st.expander(
-                    f"{type_badge} {ft_badge} **{card['title'][:80]}**"
+                    f"{ft_badge} **{card['title'][:80]}**"
                     f"{'...' if len(card['title']) > 80 else ''}"
                     f" — {card.get('authors', '未知')[:40]} ({card.get('year', '未知')})",
                 ):
                     st.markdown(format_deep_card_markdown(card))
 
         if use_data_driven and llm_api_key:
-            # ═══════════════════════════════════════════════
+            # 
             # Data-driven section-by-section LLM report path
-            # ═══════════════════════════════════════════════
+            # 
             st.markdown("---")
-            st.subheader("📋 数据驱动分章节报告")
+            st.subheader("数据驱动分章节报告")
 
             # Configure LLM
             llm_client, llm_error = try_configure_llm(
@@ -1000,11 +999,11 @@ elif page == "📊 深度调研":
             if llm_error:
                 st.error(f"LLM 配置失败：{llm_error}")
             else:
-                # ── 1. Build comparison matrix ──
+                #  1. Build comparison matrix 
                 with st.spinner("正在构建方法对比矩阵..."):
                     comparison_matrix = build_comparison_matrix(all_deduped)
 
-                # ── 2. Build report plan ──
+                #  2. Build report plan 
                 with st.spinner("正在生成数据驱动报告计划..."):
                     report_plan = build_data_driven_report_plan(
                         user_query=area.strip(),
@@ -1015,7 +1014,7 @@ elif page == "📊 深度调研":
                     )
 
                 # Show report plan
-                with st.expander("📋 报告计划", expanded=True):
+                with st.expander("报告计划", expanded=True):
                     for sp in report_plan.get("sections", []):
                         title = sp.get("template_title", "?")
                         n_papers = len(sp.get("selected_papers", []))
@@ -1023,7 +1022,7 @@ elif page == "📊 深度调研":
                                 for p in sp.get("selected_papers", [])]
                         st.markdown(f"- **{title}**：{n_papers} 篇论文 ({', '.join(pids[:8])})")
 
-                # ── 3. Section-by-section generation ──
+                #  3. Section-by-section generation 
                 with st.spinner("正在逐节生成报告（共 10 节）..."):
                     dd_result = generate_data_driven_report(
                         report_plan=report_plan,
@@ -1033,13 +1032,13 @@ elif page == "📊 深度调研":
                 report_text = dd_result["report_text"]
                 section_results = dd_result.get("sections", [])
 
-                # ── Append gap report ──
+                #  Append gap report 
                 if gap_result.get("gap_report"):
                     report_text += "\n\n" + gap_result["gap_report"]
 
-                # ── Show per-section results ──
+                #  Show per-section results 
                 st.markdown("---")
-                st.subheader("📊 逐节生成结果与引用审计")
+                st.subheader("逐节生成结果与引用审计")
 
                 for sr in section_results:
                     title = sr.get("section_title", "?")
@@ -1047,7 +1046,7 @@ elif page == "📊 深度调研":
                     v = sr.get("validation", {})
                     risk = v.get("risk_level", "?")
                     stats = v.get("stats", {})
-                    emoji = {"高风险": "🔴", "中风险": "🟡", "低风险": "🟢"}.get(risk, "⚪")
+                    emoji = {"高风险": "", "中风险": "", "低风险": ""}.get(risk, "")
 
                     with st.expander(
                         f"{emoji} **{title}** — "
@@ -1061,7 +1060,7 @@ elif page == "📊 深度调研":
                             st.markdown(sr["section_text"])
                             uncited = v.get("uncited_claims", [])
                             if uncited:
-                                st.markdown("**⚠️ 无引用陈述：**")
+                                st.markdown("** 无引用陈述：**")
                                 for uc in uncited:
                                     st.caption(f"行 {uc['line']}: {uc['sentence'][:100]}")
 
@@ -1075,7 +1074,7 @@ elif page == "📊 深度调研":
                     f"- 累计无效引用：{vs.get('total_invalid_refs', 0)}"
                 )
 
-                # ── Audit view (data-driven) ──
+                #  Audit view (data-driven) 
                 if show_audit:
                     st.markdown("---")
                     show_section_audit_rows(section_results)
@@ -1103,12 +1102,12 @@ elif page == "📊 深度调研":
                         paper_id_map=all_section_papers,
                         validation=overall_validation,
                         report_text=report_text,
-                        heading="🔍 数据驱动报告 — 整体引用审计",
+                        heading="数据驱动报告 — 整体引用审计",
                     )
 
                 # Show full report
                 st.markdown("---")
-                st.subheader("📝 完整调研报告")
+                st.subheader("完整调研报告")
                 st.markdown(report_text)
 
                 # Download button
@@ -1120,11 +1119,11 @@ elif page == "📊 深度调研":
                 )
 
         elif use_ai and llm_api_key:
-            # ═══════════════════════════════════════════════
+            # 
             # AI-enhanced evidence-anchored report path
-            # ═══════════════════════════════════════════════
+            # 
             st.markdown("---")
-            st.subheader("🤖 AI 增强报告")
+            st.subheader("AI 增强报告")
 
             # Configure LLM
             llm_client, llm_error = try_configure_llm(
@@ -1135,7 +1134,7 @@ elif page == "📊 深度调研":
             else:
                 # Use enriched evidence pack if deep reading is active
                 if deep_read and deep_enriched_pack:
-                    st.info("📖 正在使用全文精读证据包生成深度分析...")
+                    st.info(" 正在使用全文精读证据包生成深度分析...")
                     from modules.prompt_templates import (
                         EVIDENCE_ANCHORED_SYSTEM_PROMPT,
                         build_evidence_anchored_user_prompt,
@@ -1165,12 +1164,12 @@ elif page == "📊 深度调研":
                     evidence_pack = ai_result["evidence_pack"]
                     paper_id_map = ai_result["paper_id_map"]
 
-                # ── Append gap report ──
+                #  Append gap report 
                 gap_report = gap_result.get("gap_report", "")
                 if gap_report:
                     report_text += "\n\n" + gap_report
 
-                # ── Citation validation ──
+                #  Citation validation 
                 with st.spinner("正在进行引用审计..."):
                     valid_ids = set(evidence_pack.get("paper_id_map", {}).keys())
                     validation = validate_report(report_text, valid_ids)
@@ -1180,7 +1179,7 @@ elif page == "📊 深度调研":
                 st.markdown(format_validation_summary(validation))
 
                 # Show evidence pack
-                with st.expander("📦 证据包（论文编号映射）", expanded=False):
+                with st.expander("证据包（论文编号映射）", expanded=False):
                     for pid, meta in paper_id_map.items():
                         st.markdown(
                             f"- **{pid}**: [{meta.get('title', '未知')}]({meta.get('url', '#')}) "
@@ -1188,28 +1187,28 @@ elif page == "📊 深度调研":
                             f"| 引用 {meta.get('citation_count', 0)}"
                         )
 
-                # ── Audit view (single-pass AI) ──
+                #  Audit view (single-pass AI) 
                 if show_audit:
                     st.markdown("---")
                     show_audit_view(
                         paper_id_map=paper_id_map,
                         validation=validation,
                         report_text=report_text,
-                        heading="🔍 单次 LLM 报告 — 引用审计",
+                        heading="单次 LLM 报告 — 引用审计",
                     )
 
                 # Show uncited claims if any (only when audit is off, to avoid duplication)
                 if not show_audit:
                     uncited = validation.get("uncited_claims", [])
                     if uncited:
-                        with st.expander(f"⚠️ 无引用陈述详情（{len(uncited)} 条）", expanded=False):
+                        with st.expander(f"无引用陈述详情（{len(uncited)} 条）", expanded=False):
                             for uc in uncited:
                                 st.markdown(f"- **行 {uc['line']}**: {uc['sentence']}")
-                                st.caption(f"  原因：{uc['reason']}")
+                                st.caption(f"原因：{uc['reason']}")
 
                 # Show report
                 st.markdown("---")
-                st.subheader("📝 调研报告")
+                st.subheader("调研报告")
                 st.markdown(report_text)
 
                 # Download button
@@ -1221,13 +1220,13 @@ elif page == "📊 深度调研":
                 )
 
         else:
-            # ═══════════════════════════════════════════════
+            # 
             # Template-based report path (unchanged)
-            # ═══════════════════════════════════════════════
+            # 
             if use_ai and not llm_api_key:
-                st.warning("⚠️ 未配置 LLM API Key，已回退为模板报告。请设置环境变量 LLM_API_KEY 或在页面中输入 API Key。")
+                st.warning(" 未配置 LLM API Key，已回退为模板报告。请设置环境变量 LLM_API_KEY 或在页面中输入 API Key。")
 
-            # ── Generate report ──
+            #  Generate report 
             st.markdown("---")
             result = generate_survey_report(
                 area.strip(), sub_dirs, all_dir_papers,
@@ -1235,7 +1234,7 @@ elif page == "📊 深度调研":
             )
             report = result["report"]
 
-            # ── Append gap report ──
+            #  Append gap report 
             gap_report = gap_result.get("gap_report", "")
             if gap_report:
                 report += "\n\n" + gap_report
@@ -1259,7 +1258,7 @@ elif page == "📊 深度调研":
 
             # Show report
             st.markdown("---")
-            st.subheader("📝 调研报告")
+            st.subheader("调研报告")
             st.markdown(report)
 
             # Download button
@@ -1271,36 +1270,36 @@ elif page == "📊 深度调研":
             )
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# 
 # PAGE 3: 个性化推送
-# ═══════════════════════════════════════════════════════════════════════
-elif page == "📬 个性化推送":
-    st.title("📬 个性化推送")
+# 
+elif page == "个性化推送":
+    st.title("个性化推送")
     st.markdown("输入 1-10 个科研方向，生成今日学术进展日报。")
 
-    # ── User preference panel (prominent on this page) ──
-    st.subheader("🎯 用户偏好设置")
+    #  User preference panel (prominent on this page) 
+    st.subheader("用户偏好设置")
     st.caption(
         "勾选关注方向后，系统会自动调整排序权重，并计算主题偏好得分。"
     )
 
     pref_col1, pref_col2, pref_col3, pref_col4 = st.columns(4)
     with pref_col1:
-        focus_latest = st.checkbox("🆕 关注最新进展", value=True,
+        focus_latest = st.checkbox("关注最新进展", value=True,
                                    help="自动提高新鲜度权重")
     with pref_col2:
-        focus_quality = st.checkbox("🏅 关注高质量论文", value=False,
+        focus_quality = st.checkbox("关注高质量论文", value=False,
                                     help="自动提高质量分权重")
     with pref_col3:
-        focus_fresh = st.checkbox("📋 关注综述论文", value=False)
+        focus_fresh = st.checkbox("关注综述论文", value=False)
     with pref_col4:
-        focus_method = st.checkbox("🔧 关注方法创新", value=False)
+        focus_method = st.checkbox("关注方法创新", value=False)
 
     pref_col5, pref_col6, _, _ = st.columns(4)
     with pref_col5:
-        focus_application = st.checkbox("🏭 关注应用系统", value=False)
+        focus_application = st.checkbox("关注应用系统", value=False)
     with pref_col6:
-        focus_custom = st.checkbox("⚙️ 自定义权重", value=False)
+        focus_custom = st.checkbox(" 自定义权重", value=False)
 
     # Smart weight presets
     if focus_custom:
@@ -1352,7 +1351,7 @@ elif page == "📬 个性化推送":
     selected_sources = show_source_selector(default_all=True)
     sources = _init_sources(selected_sources)
 
-    # ── Interest input ──
+    #  Interest input 
     col_input, col_info = st.columns([3, 1])
     with col_input:
         interests_text = st.text_area(
@@ -1361,7 +1360,7 @@ elif page == "📬 个性化推送":
             height=120,
         )
     with col_info:
-        st.caption("💡 提示")
+        st.caption(" 提示")
         st.caption("每行输入一个研究方向，系统将分别检索各方向最新论文并生成日报。")
 
     col1, col2 = st.columns(2)
@@ -1382,12 +1381,12 @@ elif page == "📬 个性化推送":
             st.error("请输入至少 1 个研究方向。")
         else:
             st.markdown("---")
-            st.subheader(f"📌 关注方向（共 {len(interests)} 个）")
+            st.subheader(f"关注方向（共 {len(interests)} 个）")
             st.markdown("、".join([f"`{d}`" for d in interests]))
 
             # Search each interest
             st.markdown("---")
-            st.subheader("🔍 各方向检索")
+            st.subheader("各方向检索")
 
             all_by_dir = {}
             all_papers = []
@@ -1408,7 +1407,7 @@ elif page == "📬 个性化推送":
 
             # Global dedup and rerank
             st.markdown("---")
-            st.subheader("🌐 全局去重与综合排序")
+            st.subheader("全局去重与综合排序")
 
             from modules.deduplicator import deduplicate as dedup_fn
 
@@ -1443,11 +1442,11 @@ elif page == "📬 个性化推送":
 
             # Top 10 table with all scores
             st.markdown("---")
-            st.subheader(f"🏆 今日推荐 Top {top_n}")
+            st.subheader(f"今日推荐 Top {top_n}")
             show_papers_table(global_ranked, top_n, show_extra=True)
 
             # Per-paper score breakdown chart
-            st.markdown("### 📊 得分维度拆解")
+            st.markdown("###  得分维度拆解")
             if len(global_ranked) >= 5:
                 import pandas as pd
                 chart_data = []
@@ -1465,7 +1464,7 @@ elif page == "📬 个性化推送":
 
             # Top 3 deep interpretation
             st.markdown("---")
-            st.subheader("🔬 Top 3 重点论文解读")
+            st.subheader("Top 3 重点论文解读")
 
             tabs = st.tabs([f"Top {i}" for i in range(1, 4)])
             for i, tab in enumerate(tabs):
@@ -1489,11 +1488,11 @@ elif page == "📬 个性化推送":
             )
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# 
 # PAGE 4: 实验评估
-# ═══════════════════════════════════════════════════════════════════════
-elif page == "🧪 实验评估":
-    st.title("🧪 实验评估")
+# 
+elif page == "实验评估":
+    st.title("实验评估")
     st.markdown("通过对比实验验证查询扩展、个性化排序、可信度检查和主题聚类的效果。")
 
     exp_tab1, exp_tab2, exp_tab3, exp_tab4, exp_tab5 = st.tabs([
@@ -1501,7 +1500,7 @@ elif page == "🧪 实验评估":
         "实验四：主题聚类", "实验五：多源对比",
     ])
 
-    # ── Shared helper for experiment paper tables ──
+    #  Shared helper for experiment paper tables 
     def _show_exp_papers(papers, n=5):
         if not papers:
             st.warning("无数据。")
@@ -1520,9 +1519,9 @@ elif page == "🧪 实验评估":
             })
         st.dataframe(rows, use_container_width=True, hide_index=True)
 
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     # Tab 1 — Query expansion experiment
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     with exp_tab1:
         st.subheader("实验一：查询扩展效果实验")
         st.caption("对比「原始查询」与「多关键词扩展查询」的检索效果差异。")
@@ -1555,7 +1554,7 @@ elif page == "🧪 实验评估":
             st.bar_chart(chart_df.set_index("指标"), use_container_width=True)
 
             # Interpretation
-            with st.expander("📝 结果解读"):
+            with st.expander("结果解读"):
                 comp = result["comparison"]
                 raw_total = comp["原始查询"][0]
                 exp_total = comp["原始查询"][1] if len(comp["原始查询"]) > 1 else 0
@@ -1570,9 +1569,9 @@ elif page == "🧪 实验评估":
             st.markdown("### 查询扩展 Top 10 结果")
             _show_exp_papers(result["exp_ranked"], n=10)
 
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     # Tab 2 — Ranking method comparison
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     with exp_tab2:
         st.subheader("实验二：排序方法对比实验")
         st.caption("对同一批论文，比较「按时间」「按相关度」「综合排序」三种策略的 Top5 质量。")
@@ -1620,16 +1619,16 @@ elif page == "🧪 实验评估":
                 st.markdown("**综合排序**")
                 _show_exp_papers(result["composite_ranked"], n=5)
 
-            with st.expander("📝 结果解读"):
+            with st.expander("结果解读"):
                 st.markdown(
                     "- **按时间排序**偏向最新论文，新鲜度最高，但相关度可能较低。\n"
                     "- **按相关度排序**最匹配查询意图，但可能遗漏高质量经典论文。\n"
                     "- **综合排序**在相关度、新鲜度和质量之间取得平衡，效果最优。"
                 )
 
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     # Tab 3 — Personalized weight comparison
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     with exp_tab3:
         st.subheader("实验三：个性化权重对比实验")
         st.caption("模拟三类用户画像（关注最新进展 / 综述论文 / 方法创新）对同批论文生成不同推荐。")
@@ -1693,7 +1692,7 @@ elif page == "🧪 实验评估":
                     st.caption(f"**{label}用户画像** — Top5 推荐论文")
                     _show_exp_papers(ranked, n=5)
 
-            with st.expander("📝 结果解读"):
+            with st.expander("结果解读"):
                 st.markdown(
                     "- **重合度低**说明个性化权重确实改变了推荐结果，不同用户看到不同论文。\n"
                     "- **A 用户**（关注最新进展）新鲜度高，适合追踪前沿动态。\n"
@@ -1702,9 +1701,9 @@ elif page == "🧪 实验评估":
                     "- 这验证了个性化权重能有效满足不同用户的信息需求。"
                 )
 
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     # Tab 4 — Topic clustering experiment
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     with exp_tab4:
         st.subheader("实验四：主题聚类分析实验")
         st.caption("对检索到的论文进行 TF-IDF + KMeans 聚类，自动发现研究方向结构。")
@@ -1757,9 +1756,9 @@ elif page == "🧪 实验评估":
                         for p in c["papers"][:5]:
                             st.markdown(f"- [{p['title']}]({p.get('link', '#')})")
                         if c["paper_count"] > 5:
-                            st.caption(f"  ...及其他 {c['paper_count'] - 5} 篇")
+                            st.caption(f"...及其他 {c['paper_count'] - 5} 篇")
 
-                with st.expander("📝 结果解读"):
+                with st.expander("结果解读"):
                     st.markdown(
                         f"- 文献自动聚为 **{result['n_clusters']}** 个主题簇。\n"
                         f"- 轮廓系数 **{result['silhouette']:.3f}** 反映聚类质量。\n"
@@ -1767,9 +1766,9 @@ elif page == "🧪 实验评估":
                         "  为深度调研提供可参考的主题划分依据。"
                     )
 
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     # Tab 5 — Multi-source comparison experiment
-    # ═══════════════════════════════════════════════════════════════════
+    # 
     with exp_tab5:
         st.subheader("实验五：多源数据源对比实验")
         st.caption(
@@ -1788,25 +1787,25 @@ elif page == "🧪 实验评估":
             with st.spinner("实验中... 并行调用 arXiv / OpenAlex / Semantic Scholar..."):
                 result = evaluate_multi_source(exp5_query.strip(), max_results=exp5_n)
 
-            # ── Source errors ──
+            #  Source errors 
             errors = result.get("source_errors", {})
             failed_sources = {k: v for k, v in errors.items() if v}
             if failed_sources:
-                st.warning("⚠️ 以下数据源调用异常（其他数据源结果正常）：")
+                st.warning("以下数据源调用异常（其他数据源结果正常）：")
                 for name, err in failed_sources.items():
                     st.caption(f"- **{name}**: {err}")
             else:
-                st.success("✅ 三个数据源均调用成功！")
+                st.success("三个数据源均调用成功！")
 
-            # ── Per-source stats table ──
+            #  Per-source stats table 
             st.markdown("---")
-            st.subheader("📊 各数据源统计")
+            st.subheader("各数据源统计")
             import pandas as pd
             df = pd.DataFrame(result["comparison"])
             st.dataframe(df.set_index("指标"), use_container_width=True)
 
-            # ── Bar charts ──
-            st.markdown("### 📈 指标对比柱状图")
+            #  Bar charts 
+            st.markdown("###  指标对比柱状图")
             chart_df = pd.DataFrame(result["chart_data"])
 
             col_c1, col_c2 = st.columns(2)
@@ -1844,9 +1843,9 @@ elif page == "🧪 实验评估":
                     )
                     st.bar_chart(melted.set_index("数据源")[["缺失率"]], use_container_width=True)
 
-            # ── Merge stats ──
+            #  Merge stats 
             st.markdown("---")
-            st.subheader("🔗 合并与去重统计")
+            st.subheader("合并与去重统计")
             merge = result["merge_stats"]
 
             col_m1, col_m2, col_m3, col_m4 = st.columns(4)
@@ -1855,9 +1854,9 @@ elif page == "🧪 实验评估":
             col_m3.metric("重复论文数", merge["total_duplicates"])
             col_m4.metric("重复率", f"{merge['dedup_rate']}%")
 
-            # ── Overlap ──
+            #  Overlap 
             st.markdown("---")
-            st.subheader("🔀 数据源重合度")
+            st.subheader("数据源重合度")
             ov = result["overlap"]
 
             col_o1, col_o2, col_o3, col_o4 = st.columns(4)
@@ -1866,8 +1865,8 @@ elif page == "🧪 实验评估":
             col_o3.metric("OpenAlex ∩ S2", ov.get("openalex ∩ semantic_scholar", 0))
             col_o4.metric("三源重合", ov.get("三源重合", 0))
 
-            # ── Interpretation ──
-            with st.expander("📝 结果解读"):
+            #  Interpretation 
+            with st.expander("结果解读"):
                 interp_lines = [
                     "- **arXiv** 覆盖预印本论文，不含引用数，无 DOI 缺失问题（arXiv ID 即标识符）。",
                     "- **OpenAlex** 覆盖正式出版物（期刊/会议），引用数最完整，DOI 缺失率最低。",

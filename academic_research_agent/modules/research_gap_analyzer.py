@@ -632,7 +632,7 @@ def _build_gap_report(
 ) -> str:
     """Build a markdown report section for research gaps and suggestions."""
     lines: list[str] = []
-    confidence_emoji = {"高": "🟢", "中": "🟡", "低": "🔴"}
+    confidence_label = {"高": "[高]", "中": "[中]", "低": "[低]"}
 
     lines.append("---")
     lines.append("")
@@ -642,7 +642,7 @@ def _build_gap_report(
     lines.append("")
 
     # ── 1. Hotspots ──
-    lines.append("### 🔥 当前研究热点")
+    lines.append("### 当前研究热点")
     lines.append("")
 
     hot_kw = hotspots.get("top_keywords", [])
@@ -669,7 +669,7 @@ def _build_gap_report(
     lines.append("")
 
     # ── 2. Method distribution ──
-    lines.append("### 📊 方法分布与集中度分析")
+    lines.append("### 方法分布与集中度分析")
     lines.append("")
 
     cats = method_dist.get("category_distribution", {})
@@ -697,19 +697,19 @@ def _build_gap_report(
 
     if eval_pct > method_pct * 1.5:
         lines.append(
-            f"> ⚡ 评测基准论文（{eval_pct}%）远超方法创新（{method_pct}%），"
+            f"> [!]评测基准论文（{eval_pct}%）远超方法创新（{method_pct}%），"
             f"该领域**方法创新空间充足**。"
         )
         lines.append("")
     if method_pct > app_pct * 2:
         lines.append(
-            f"> ⚡ 方法类论文（{method_pct}%）远超应用系统（{app_pct}%），"
+            f"> [!]方法类论文（{method_pct}%）远超应用系统（{app_pct}%），"
             f"存在明显的**落地转化鸿沟**。"
         )
         lines.append("")
 
     # ── 3. Recurring problems ──
-    lines.append("### ⚠️ 反复出现的问题与挑战")
+    lines.append("### 反复出现的问题与挑战")
     lines.append("")
 
     problems = recurring_problems.get("problem_categories", [])
@@ -731,13 +731,13 @@ def _build_gap_report(
         lines.append("")
 
     # ── 4. Potential gaps ──
-    lines.append("### 🕳️ 潜在研究空白")
+    lines.append("### 潜在研究空白")
     lines.append("")
 
     for i, gap in enumerate(gaps, 1):
         conf = gap.get("confidence", "低")
-        emoji = confidence_emoji.get(conf, "⚪")
-        lines.append(f"**{i}. {gap['theme']}**  {emoji} 可信度：{conf}")
+        label = confidence_label.get(conf, "")
+        lines.append(f"**{i}. {gap['theme']}**  {label} 可信度: {conf}")
         lines.append("")
         lines.append(f"   {gap['description']}")
         kws = gap.get("keywords", [])
@@ -746,7 +746,7 @@ def _build_gap_report(
         lines.append("")
 
     # ── 5. Topic suggestions ──
-    lines.append("### 💡 可行选题建议")
+    lines.append("### 可行选题建议")
     lines.append("")
 
     lines.append("| # | 选题方向 | 可行性 | 创新级别 | 预估投入 |")

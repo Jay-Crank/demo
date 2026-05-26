@@ -256,10 +256,10 @@ def format_validation_summary(validation: dict) -> str:
     """Render validation results as a short Markdown summary for the UI."""
     stats = validation.get("stats", {})
     risk = validation.get("risk_level", "低风险")
-    emoji = {"高风险": "🔴", "中风险": "🟡", "低风险": "🟢"}.get(risk, "⚪")
+    risk_label = {"高风险": "[高风险]", "中风险": "[中风险]", "低风险": "[低风险]"}.get(risk, "")
 
     lines = [
-        f"### {emoji} 引用审计结果 — 风险等级：{risk}",
+        f"### {risk_label} 引用审计结果 -- 风险等级: {risk}",
         "",
         f"- **引用标记总数**：{stats.get('total_citation_marks', 0)}",
         f"- **独立引用论文数**：{stats.get('unique_papers_cited', 0)}",
@@ -272,6 +272,6 @@ def format_validation_summary(validation: dict) -> str:
     if suggestions:
         lines.append("")
         for s in suggestions:
-            lines.append(f"- 💡 {s}")
+            lines.append(f"- {s}")
 
     return "\n".join(lines)
